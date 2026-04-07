@@ -1,34 +1,20 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class User extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',
-    ];
-
-    protected $hidden = [
-        'password',
-    ];
-
-    public function nailArtist(): HasOne
-    {
-        return $this->hasOne(NailArtist::class);
-    }
-
-    public function bookings(): HasMany
-    {
+    public function bookings() {
         return $this->hasMany(Booking::class);
     }
+
+    public function reviews() {
+        return $this->hasMany(Review::class);
+    }
+
+    public function nailArtist() {
+        return $this->hasOne(NailArtist::class);
+    }
 }
-?>

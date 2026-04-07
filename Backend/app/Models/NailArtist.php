@@ -1,43 +1,28 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class NailArtist extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'user_id',
-        'name',
-        'city',
-        'description',
-        'rating',
-        'price_range',
-        'approved',
-    ];
-
-    public function user(): BelongsTo
-    {
+    public function user() {
         return $this->belongsTo(User::class);
     }
 
-    public function services(): HasMany
-    {
+    public function services() {
         return $this->hasMany(Service::class);
     }
 
-    public function galleryImages(): HasMany
-    {
-        return $this->hasMany(GalleryImage::class);
-    }
-
-    public function bookings(): HasMany
-    {
+    public function bookings() {
         return $this->hasMany(Booking::class);
     }
+
+    public function reviews() {
+        return $this->hasMany(Review::class);
+    }
+
+    public function galleryImages() {
+        return $this->hasMany(GalleryImage::class);
+    }
 }
-?>

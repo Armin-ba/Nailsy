@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('gallery_images', function (Blueprint $table) {
+        Schema::create('reviews', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('nail_artist_id')->constrained()->cascadeOnDelete();
+            $table->integer('rating');
+            $table->text('comment')->nullable();
             $table->timestamps();
         });
     }
@@ -22,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('gallery_images');
+        Schema::dropIfExists('reviews');
     }
 };

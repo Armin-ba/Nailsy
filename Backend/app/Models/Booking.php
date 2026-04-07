@@ -1,39 +1,28 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Booking extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'user_id',
         'nail_artist_id',
         'service_id',
-        'booking_date',
-        'status',
+        'booking_datetime',
+        'status'
     ];
 
-    protected $casts = [
-        'booking_date' => 'datetime',
-    ];
-
-    public function user(): BelongsTo
-    {
+    public function user() {
         return $this->belongsTo(User::class);
     }
 
-    public function nailArtist(): BelongsTo
-    {
+    public function nailArtist() {
         return $this->belongsTo(NailArtist::class);
     }
 
-    public function service(): BelongsTo
-    {
+    public function service() {
         return $this->belongsTo(Service::class);
     }
 }
-?>

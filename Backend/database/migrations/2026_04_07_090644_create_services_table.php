@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bookings', function (Blueprint $table) {
+        Schema::create('services', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('nail_artist_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->integer('price');
+            $table->integer('duration_minutes');
             $table->timestamps();
         });
     }
@@ -22,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bookings');
+        Schema::dropIfExists('services');
     }
 };

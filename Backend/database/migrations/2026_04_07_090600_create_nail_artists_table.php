@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('nail_artists', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->string('city');
+            $table->text('description')->nullable();
+            $table->float('rating')->default(0);
+            $table->string('price_range')->nullable();
+            $table->boolean('approved')->default(false);
             $table->timestamps();
         });
     }
