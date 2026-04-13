@@ -6,6 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class NailArtist extends Model
 {
+    protected $fillable = [
+        'user_id',
+        'name',
+        'city',
+        'description',
+        'rating'
+    ];
+
     public function user() {
         return $this->belongsTo(User::class);
     }
