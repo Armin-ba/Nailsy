@@ -9,7 +9,7 @@ export default {
 
     <div class="auth-left">
       <div class="brand">
-        💅 NailBook
+        Nailsy
       </div>
 
       <h1>

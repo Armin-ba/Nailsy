@@ -30,7 +30,7 @@
 
     <!-- FOOTER -->
     <footer class="footer">
-      <p>© 2026 NailBook</p>
+      <p>© 2026 Nailsy</p>
     </footer>
 
   </div>
