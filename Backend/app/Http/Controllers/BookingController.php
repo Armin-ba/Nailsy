@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreBookingRequest;
 
 class BookingController extends Controller
 {
@@ -12,41 +12,41 @@ class BookingController extends Controller
         return Booking::with('service', 'nailArtist')->get();
     }
 
-    public function store(Request $request)
+    public function store(StoreBookingRequest $request)
     {
-        // 🔴 ÜTKÖZÉS ELLENŐRZÉS (7. pont!)
+        // ÜTKÖZÉS ELLENŐRZÉS
         $exists = Booking::where('nail_artist_id', $request->nail_artist_id)
             ->where('booking_datetime', $request->booking_datetime)
             ->exists();
 
         if ($exists) {
-            return response()->json(['error' => 'Időpont foglalt'], 400);
+            return response()->json([
+                'error' => 'Ez az időpont már foglalt'
+            ], 400);
         }
 
-        return Booking::create([
+        $booking = Booking::create([
             'user_id' => auth()->id(),
             'nail_artist_id' => $request->nail_artist_id,
             'service_id' => $request->service_id,
             'booking_datetime' => $request->booking_datetime,
             'status' => 'pending'
         ]);
+
+        return response()->json($booking);
     }
 
     public function show($id)
     {
-        return Booking::with('service', 'nailArtist')->findOrFail($id);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $booking = Booking::findOrFail($id);
-        $booking->update($request->all());
-        return $booking;
+        return Booking::findOrFail($id);
     }
 
     public function destroy($id)
     {
         Booking::destroy($id);
-        return response()->json(['message' => 'Deleted']);
+
+        return response()->json([
+            'message' => 'Törölve'
+        ]);
     }
 }

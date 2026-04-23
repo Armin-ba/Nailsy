@@ -39,25 +39,24 @@
 </template>
 
 <script setup>
-import { reactive } from "vue"
-import { useRouter } from "vue-router"
+import { ref } from "vue";
+import { useAuthStore } from "../../stores/auth";
+import {useRouter} from "vue-router";
+const router = useRouter();
+const auth = useAuthStore();
 
-const router = useRouter()
+const email = ref("");
+const password = ref("");
+const error = ref("");
 
-const form = reactive({
-  email: "",
-  password: ""
-})
-
-const handleLogin = () => {
-  console.log("LOGIN:", form)
-
-  // később:
-  // auth API
-
-  // demo redirect:
-  router.push("/app")
-}
+const handleLogin = async () => {
+  try {
+    await auth.login(email.value, password.value);
+    router.push("/app")
+  } catch (e) {
+    error.value = "Hibás email vagy jelszó";
+  }
+};
 </script>
 
 <style scoped>

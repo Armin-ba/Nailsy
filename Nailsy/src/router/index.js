@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router"
-
+import { useAuthStore } from "../stores/auth";
 // layouts
 import PublicLayout from "../layout/PublicLayout.vue"
 import AuthLayout from "../layout/AuthLayout.vue"
@@ -126,17 +126,26 @@ const routes = [
       {
         path: "admin/users",
         name: "admin-users",
-        component: AdminUserView
+        component: AdminUserView,
+        meta: {
+            requiresAuth: true
+        }
       },
       {
         path: "admin/artists",
         name: "admin-artists",
-        component: AdminArtistView
+        component: AdminArtistView,
+          meta: {
+              requiresAuth: true
+          }
       },
       {
         path: "admin/reviews",
         name: "admin-reviews",
-        component: AdminReviewModerationView
+        component: AdminReviewModerationView,
+          meta: {
+              requiresAuth: true
+          }
       }
     ]
   },
@@ -152,9 +161,19 @@ const routes = [
   }
 ]
 
+
 const router = createRouter({
   history: createWebHistory(),
   routes
 })
 
+router.beforeEach((to, from, next) => {
+    const auth = useAuthStore();
+
+    if (to.meta.requiresAuth && !auth.token) {
+        next("/login");
+    } else {
+        next();
+    }
+});
 export default router
