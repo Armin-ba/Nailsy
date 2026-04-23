@@ -13,11 +13,19 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('nail_artist_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('service_id')->constrained()->cascadeOnDelete();
-            $table->dateTime('booking_datetime');
-            $table->string('status')->default('pending'); // pending, approved, cancelled
+
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('nail_artist_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->date('booking_date');
+
+            $table->string('status')->default('pending');
+
             $table->timestamps();
         });
     }

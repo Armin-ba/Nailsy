@@ -13,9 +13,13 @@ return new class extends Migration
     {
         Schema::create('gallery_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('nail_artist_id')->constrained()->cascadeOnDelete();
+
+            $table->foreignId('nail_artist_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
             $table->string('image_url');
-            $table->text('description')->nullable();
+
             $table->timestamps();
         });
     }

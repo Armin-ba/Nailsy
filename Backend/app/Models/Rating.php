@@ -4,20 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Review extends Model
+class Rating extends Model
 {
     protected $fillable = [
         'user_id',
         'nail_artist_id',
-        'rating',
-        'comment'
+        'star',
+        'comment',
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function nailArtist() {
+    public function nailArtist()
+    {
         return $this->belongsTo(NailArtist::class);
     }
 }

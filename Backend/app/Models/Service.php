@@ -10,10 +10,11 @@ class Service extends Model
         'nail_artist_id',
         'name',
         'price',
-        'duration'
+        'duration_min',
     ];
 
-    public function nailArtist() {
+    public function nailArtist()
+    {
         return $this->belongsTo(NailArtist::class);
     }
 }

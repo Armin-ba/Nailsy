@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('nail_artists', function (Blueprint $table) {
+        Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+
+            $table->foreignId('nail_artist_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
             $table->string('name');
-            $table->string('city');
-            $table->text('description')->nullable();
-            $table->float('rating')->default(0);
-            $table->string('price_range')->nullable();
-            $table->boolean('approved')->default(false);
+            $table->integer('price');
+            $table->integer('duration_min');
+
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('nail_artists');
+        Schema::dropIfExists('services');
     }
 };

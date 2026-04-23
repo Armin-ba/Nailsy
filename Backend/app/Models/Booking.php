@@ -9,20 +9,17 @@ class Booking extends Model
     protected $fillable = [
         'user_id',
         'nail_artist_id',
-        'service_id',
-        'booking_datetime',
-        'status'
+        'booking_date',
+        'status',
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function nailArtist() {
+    public function nailArtist()
+    {
         return $this->belongsTo(NailArtist::class);
-    }
-
-    public function service() {
-        return $this->belongsTo(Service::class);
     }
 }

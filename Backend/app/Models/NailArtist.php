@@ -11,26 +11,33 @@ class NailArtist extends Model
         'name',
         'city',
         'description',
-        'rating'
+        'rating',
+        'price_range',
+        'approved',
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function services() {
-        return $this->hasMany(Service::class);
-    }
-
-    public function bookings() {
+    public function bookings()
+    {
         return $this->hasMany(Booking::class);
     }
 
-    public function reviews() {
-        return $this->hasMany(Review::class);
+    public function services()
+    {
+        return $this->hasMany(Service::class);
     }
 
-    public function galleryImages() {
+    public function galleryImages()
+    {
         return $this->hasMany(GalleryImage::class);
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
     }
 }

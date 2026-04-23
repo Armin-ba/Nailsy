@@ -2,27 +2,49 @@
 
 namespace App\Models;
 
-use Laravel\Sanctum\HasApiTokens;
+use App\Models\Booking;
+use App\Models\NailArtist;
+use App\Models\Rating;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role'
+        'role',
     ];
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
 
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function nailArtist()
+    {
+        return $this->hasOne(NailArtist::class);
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
     }
 }
