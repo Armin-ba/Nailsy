@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Service extends Model
+class AvailableSlot extends Model
 {
     protected $fillable = [
         'nail_artist_id',
-        'name',
-        'price',
-        'duration_min',
+        'slot_date',
+        'start_time',
+        'end_time',
+        'is_booked',
     ];
 
     public function nailArtist()
@@ -18,8 +19,8 @@ class Service extends Model
         return $this->belongsTo(NailArtist::class);
     }
 
-    public function bookings()
+    public function booking()
     {
-        return $this->hasMany(Booking::class);
+        return $this->hasOne(Booking::class);
     }
 }

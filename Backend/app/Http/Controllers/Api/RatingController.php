@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreRatingRequest;
 use App\Models\NailArtist;
 use App\Models\Rating;
-use Illuminate\Http\Request;
 
 class RatingController extends Controller
 {
@@ -19,13 +19,9 @@ class RatingController extends Controller
         return response()->json($ratings);
     }
 
-    public function store(Request $request)
+    public function store(StoreRatingRequest $request)
     {
-        $validated = $request->validate([
-            'nail_artist_id' => ['required', 'exists:nail_artists,id'],
-            'star' => ['required', 'integer', 'min:1', 'max:5'],
-            'comment' => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $request->validated();
 
         $rating = Rating::create([
             'user_id' => $request->user()->id,

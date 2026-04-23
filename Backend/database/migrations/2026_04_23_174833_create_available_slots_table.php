@@ -8,19 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('ratings', function (Blueprint $table) {
+        Schema::create('available_slots', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('user_id')
-                ->constrained('users')
-                ->cascadeOnDelete();
 
             $table->foreignId('nail_artist_id')
                 ->constrained('nail_artists')
                 ->cascadeOnDelete();
 
-            $table->integer('star');
-            $table->text('comment')->nullable();
+            $table->date('slot_date');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->boolean('is_booked')->default(false);
 
             $table->timestamps();
         });
@@ -28,6 +26,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('ratings');
+        Schema::dropIfExists('available_slots');
     }
 };

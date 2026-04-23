@@ -40,4 +40,8 @@ class NailArtist extends Model
     {
         return $this->hasMany(Rating::class);
     }
+    public function availableSlots()
+    {
+        return $this->hasMany(AvailableSlot::class);
+    }
 }
