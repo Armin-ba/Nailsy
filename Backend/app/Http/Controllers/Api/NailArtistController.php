@@ -16,6 +16,29 @@ class NailArtistController extends Controller
 
         return response()->json($artists);
     }
+    public function search(\Illuminate\Http\Request $request)
+    {
+        $query = NailArtist::with(['services', 'galleryImages', 'ratings'])
+            ->where('approved', true);
+
+        if ($request->filled('city')) {
+            $query->where('city', 'like', '%' . $request->city . '%');
+        }
+
+        if ($request->filled('service')) {
+            $query->whereHas('services', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->service . '%');
+            });
+        }
+
+        if ($request->filled('min_rating')) {
+            $query->where('rating', '>=', $request->min_rating);
+        }
+
+        return response()->json(
+            $query->orderByDesc('rating')->get()
+        );
+    }
 
     public function all()
     {

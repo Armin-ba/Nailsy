@@ -18,11 +18,29 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'],
-            'role' => $validated['role'] ?? 'user',
+            'role' => $validated['role'],
         ]);
 
+        if ($validated['role'] === 'artist') {
+            \App\Models\NailArtist::create([
+                'user_id' => $user->id,
+                'name' => $validated['name'],
+                'city' => $validated['city'],
+                'postal_code' => $validated['postal_code'],
+                'street' => $validated['street'],
+                'house_number' => $validated['house_number'],
+                'salon_address' => $validated['salon_address'] ?? null,
+                'description' => $validated['description'] ?? 'Új körmös profil jóváhagyásra vár.',
+                'rating' => 0,
+                'price_range' => 'Nincs megadva',
+                'approved' => false,
+            ]);
+        }
+
         return response()->json([
-            'message' => 'Sikeres regisztráció',
+            'message' => $validated['role'] === 'artist'
+                ? 'Sikeres körmös regisztráció. A profil admin jóváhagyásra vár.'
+                : 'Sikeres regisztráció.',
             'user' => $user,
         ], 201);
     }

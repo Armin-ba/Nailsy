@@ -1,13 +1,13 @@
 <template>
+  <div class="min-vh-100">
+    <Navbar />
 
+    <main>
+      <router-view />
+    </main>
+  </div>
 </template>
 
-<script>
-export default {
-  name: "AppLayout"
-}
+<script setup>
+import Navbar from "../components/Navbar.vue";
 </script>
-
-<style scoped>
-
-</style>

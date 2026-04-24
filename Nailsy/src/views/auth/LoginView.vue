@@ -1,133 +1,103 @@
 <template>
-  <div class="login-page">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4">
+          <div class="card-body p-4">
+            <h2 class="fw-bold mb-3">Bejelentkezés</h2>
 
-    <div class="card">
-      <h1>Bejelentkezés</h1>
-      <p class="subtitle">Üdv újra</p>
+            <div v-if="error" class="alert alert-danger">
+              {{ error }}
+            </div>
 
-      <form @submit.prevent="handleLogin">
+            <div class="mb-3">
+              <label class="form-label">Email cím</label>
+              <input
+                  v-model="email"
+                  type="email"
+                  class="form-control"
+                  placeholder="user@test.com"
+              />
+            </div>
 
-        <input
-            v-model="form.email"
-            type="email"
-            placeholder="Email cím"
-            required
-        />
+            <div class="mb-3">
+              <label class="form-label">Jelszó</label>
+              <input
+                  v-model="password"
+                  type="password"
+                  class="form-control"
+                  placeholder="password"
+              />
+            </div>
 
-        <input
-            v-model="form.password"
-            type="password"
-            placeholder="Jelszó"
-            required
-        />
+            <button
+                class="btn btn-dark w-100"
+                :disabled="loading"
+                @click="handleLogin"
+            >
+              <span
+                  v-if="loading"
+                  class="spinner-border spinner-border-sm me-2"
+              ></span>
+              Bejelentkezés
+            </button>
 
-        <button type="submit">
-          Bejelentkezés
-        </button>
+            <p class="text-muted mt-3 mb-0">
+              Még nincs fiókod?
+              <RouterLink to="/auth/register">Regisztráció</RouterLink>
+            </p>
 
-      </form>
+            <hr />
 
-      <p class="register-link">
-        Nincs még fiókod?
-        <router-link :to="{ name: 'register' }">
-          Regisztrálj
-        </router-link>
-      </p>
+            <small class="text-muted">
+              Teszt user: <b>user@test.com</b> / <b>password</b>
+            </small>
+          </div>
+        </div>
+      </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
-import {useRouter} from "vue-router";
+
 const router = useRouter();
+const route = useRoute();
 const auth = useAuthStore();
 
 const email = ref("");
 const password = ref("");
+const loading = ref(false);
 const error = ref("");
 
 const handleLogin = async () => {
+  error.value = "";
+  loading.value = true;
+
   try {
-    await auth.login(email.value, password.value);
-    router.push("/app")
-  } catch (e) {
-    error.value = "Hibás email vagy jelszó";
+    const user = await auth.login(email.value, password.value);
+
+    const redirect = route.query.redirect;
+
+    if (redirect) {
+      router.push(redirect);
+      return;
+    }
+
+    if (user.role === "admin") {
+      router.push("/app/admin/artists");
+    } else if (user.role === "artist") {
+      router.push("/app/artist/dashboard");
+    } else {
+      router.push("/app/artists");
+    }
+  } catch (err) {
+    error.value = err.response?.data?.message || "Sikertelen bejelentkezés.";
+  } finally {
+    loading.value = false;
   }
 };
 </script>
-
-<style scoped>
-
-/* PAGE */
-.login-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 80vh;
-}
-
-/* CARD */
-.card {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  width: 320px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  text-align: center;
-}
-
-/* TITLE */
-h1 {
-  color: #2b4c7e;
-  margin-bottom: 5px;
-}
-
-.subtitle {
-  color: #7a9cc6;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-
-/* INPUT */
-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  border: 1px solid #e6f0fa;
-  outline: none;
-}
-
-input:focus {
-  border-color: #74b9ff;
-}
-
-/* BUTTON */
-button {
-  width: 100%;
-  padding: 12px;
-  background: #74b9ff;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-/* LINK */
-.register-link {
-  margin-top: 15px;
-  font-size: 14px;
-}
-
-.register-link a {
-  color: #74b9ff;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-</style>

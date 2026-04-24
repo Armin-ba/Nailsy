@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/artists/search', [NailArtistController::class, 'search']);
 Route::get('/artists', [NailArtistController::class, 'index']);
 Route::get('/artists/{id}', [NailArtistController::class, 'show']);
 Route::get('/artists/{artistId}/services', [ServiceController::class, 'byArtist']);

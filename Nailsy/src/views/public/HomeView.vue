@@ -1,123 +1,198 @@
+<script setup>
+import { onMounted, ref } from "vue";
+import { getApprovedArtists } from "../../services/artistService";
+
+const artists = ref([]);
+const loading = ref(true);
+const error = ref("");
+
+onMounted(async () => {
+  try {
+    const data = await getApprovedArtists();
+
+
+    artists.value = data.slice(0, 3);
+  } catch (err) {
+    error.value = "Nem sikerült betölteni a körmösöket.";
+    console.error(err);
+  } finally {
+    loading.value = false;
+  }
+});
+</script>
+
+
 <template>
-  <Navbar></Navbar>
-  <div class="app">
-    <section id="home" class="hero">
-      <h1>Üdv a Nailsy-nél 💅</h1>
-      <button class="cta" @click="scrollToCategories">Felfedezés</button>
-    </section>
+  <div>
+    <section class="hero-section py-5">
+      <div class="container">
+        <div class="row align-items-center gy-4">
+          <div class="col-lg-6">
+            <span class="badge rounded-pill text-bg-light mb-3">
+              <i class="bi bi-heart-fill me-1"></i>
+              Körmösfoglalás egyszerűen
+            </span>
 
-    <section id="categories" class="section">
-      <h2>Kategóriák</h2>
-      <div class="grid">
-        <div class="card">⭐ Értékelés szerint</div>
-        <div class="card">📍 Helyszín szerint</div>
-        <div class="card">💰 Ár szerint</div>
-      </div>
-    </section>
+            <h1 class="display-5 fw-bold mb-3">
+              Találd meg a kedvenc körmösödet a
+              <span class="text-brand">Nailsy</span> segítségével
+            </h1>
 
-    <section id="nailtechs" class="section">
-      <h2>Kiemelt körmösök</h2>
+            <p class="lead text-muted mb-4">
+              Böngéssz körmösök között, nézd meg a szolgáltatásokat,
+              értékeléseket és foglalj időpontot könnyedén.
+            </p>
 
-      <div class="grid">
-        <div
-            v-for="tech in nailTechs"
-            :key="tech.name"
-            class="card tech"
-        >
-          <h3>{{ tech.name }}</h3>
-          <p>⭐ {{ tech.rating }} | {{ tech.city }}</p>
-          <p>💰 {{ tech.price }}</p>
+            <div class="d-flex gap-2 flex-wrap">
+              <RouterLink to="/artists" class="btn btn-dark btn-lg">
+                Körmösök megtekintése
+              </RouterLink>
+
+              <RouterLink to="/auth/register" class="btn btn-outline-dark btn-lg">
+                Regisztráció
+              </RouterLink>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="hero-card shadow-lg">
+              <i class="bi bi-calendar-heart display-1 text-brand"></i>
+              <h3 class="mt-3">Gyors időpontfoglalás</h3>
+              <p class="text-muted mb-0">
+                Válassz körmöst, szolgáltatást és szabad időpontot.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <footer class="footer">
-      <p>© 2026 Nailsy - Minden jog fenntartva</p>
-    </footer>
+    <section id="search" class="py-5 bg-light">
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="fw-bold mb-1">Kiemelt körmösök</h2>
+            <p class="text-muted mb-0">
+              Jóváhagyott körmösök az adatbázisból.
+            </p>
+          </div>
+
+          <RouterLink to="/artists" class="btn btn-outline-dark">
+            Összes körmös
+          </RouterLink>
+        </div>
+
+        <div v-if="loading" class="text-center py-5">
+          <div class="spinner-border text-dark" role="status"></div>
+          <p class="text-muted mt-3">Körmösök betöltése...</p>
+        </div>
+
+        <div v-else-if="error" class="alert alert-danger">
+          {{ error }}
+        </div>
+
+        <div v-else-if="artists.length === 0" class="alert alert-warning">
+          Jelenleg nincs megjeleníthető körmös.
+        </div>
+
+        <div v-else class="row g-4">
+          <div
+              v-for="artist in artists"
+              :key="artist.id"
+              class="col-md-6 col-lg-4"
+          >
+            <div class="card h-100 border-0 shadow-sm artist-card">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="avatar me-3">
+                    <i class="bi bi-person-heart"></i>
+                  </div>
+
+                  <div>
+                    <h5 class="card-title mb-0">
+                      {{ artist.name }}
+                    </h5>
+
+                    <small class="text-muted">
+                      <i class="bi bi-geo-alt me-1"></i>
+                      {{ artist.city }}
+                    </small>
+                  </div>
+                </div>
+
+                <p class="card-text text-muted artist-description">
+                  {{ artist.description || "Nincs megadott leírás." }}
+                </p>
+
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="badge text-bg-light">
+                    <i class="bi bi-star-fill text-warning me-1"></i>
+                    {{ artist.rating ?? 0 }}
+                  </span>
+
+                  <span class="fw-semibold">
+                    {{ artist.price_range }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="card-footer bg-white border-0">
+                <RouterLink
+                    :to="`/artists/${artist.id}`"
+                    class="btn btn-dark w-100"
+                >
+                  Profil megtekintése
+                </RouterLink>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
   </div>
 </template>
 
-<script setup>
-import navbar from "@/components/Navbar.vue";
-import { ref } from "vue";
 
-const nailTechs = ref([
-  {
-    name: "Beauty Nails Studio",
-    rating: 4.9,
-    city: "Budapest",
-    price: "5.000 - 12.000 Ft",
-  },
-  {
-    name: "Pink Nails Art",
-    rating: 4.7,
-    city: "Debrecen",
-    price: "4.000 - 10.000 Ft",
-  },
-  {
-    name: "Luxury Nails",
-    rating: 5.0,
-    city: "Szeged",
-    price: "8.000 - 15.000 Ft",
-  },
-]);
-
-function scrollToCategories() {
-  document.getElementById("categories")?.scrollIntoView({
-    behavior: "smooth",
-  });
-}
-</script>
 
 <style scoped>
-.app {
-  font-family: Arial, sans-serif;
-  background: #e6f7ff;
-  color: #333;
+.hero-section {
+  background: linear-gradient(135deg, #fff5f9, #ffffff);
 }
 
-.hero {
-  text-align: center;
-  padding: 80px 20px;
+.text-brand {
+  color: #c15c8a;
 }
 
-.cta {
-  margin-top: 20px;
-  padding: 10px 20px;
-  border: none;
-  background: #4fc3f7;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.section {
-  padding: 40px 20px;
-  text-align: center;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.card {
+.hero-card {
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.tech h3 {
-  margin-bottom: 10px;
-}
-
-.footer {
+  border-radius: 28px;
+  padding: 60px 40px;
   text-align: center;
-  padding: 20px;
-  background: #b3e5fc;
-  margin-top: 40px;
+}
+
+.artist-card {
+  border-radius: 22px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.artist-card:hover {
+  transform: translateY(-4px);
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ffe3ef;
+  color: #c15c8a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.artist-description {
+  min-height: 72px;
 }
 </style>
