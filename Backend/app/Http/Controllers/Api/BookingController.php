@@ -112,55 +112,30 @@ class BookingController extends Controller
         return response()->json($booking);
     }
 
-    public function accept(\Illuminate\Http\Request $request, $id)
+    public function accept($id)
     {
-        $artist = NailArtist::where('user_id', $request->user()->id)->firstOrFail();
+        $booking = Booking::findOrFail($id);
 
-        $booking = Booking::where('nail_artist_id', $artist->id)->findOrFail($id);
-
-        if ($booking->status !== 'pending') {
-            return response()->json([
-                'message' => 'Csak függőben lévő foglalás fogadható el',
-            ], 422);
-        }
-
-        $booking->update([
-            'status' => 'accepted',
-        ]);
+        $booking->status = 'accepted';
+        $booking->save();
 
         return response()->json([
-            'message' => 'Foglalás elfogadva',
-            'booking' => $booking->load(['user', 'availableSlot', 'service']),
+            'message'=>'Foglalás elfogadva'
         ]);
     }
 
-    public function reject(\Illuminate\Http\Request $request, $id)
+    public function reject($id)
     {
-        $artist = NailArtist::where('user_id', $request->user()->id)->firstOrFail();
+        $booking = Booking::findOrFail($id);
 
-        $booking = Booking::where('nail_artist_id', $artist->id)->findOrFail($id);
-
-        if ($booking->status === 'rejected') {
-            return response()->json([
-                'message' => 'A foglalás már el lett utasítva',
-            ], 422);
-        }
-
-        $booking->update([
-            'status' => 'rejected',
-        ]);
-
-        if ($booking->available_slot_id) {
-            $booking->availableSlot()->update([
-                'is_booked' => false,
-            ]);
-        }
+        $booking->status = 'rejected';
+        $booking->save();
 
         return response()->json([
-            'message' => 'Foglalás elutasítva',
-            'booking' => $booking->load(['user', 'availableSlot', 'service']),
+            'message'=>'Foglalás elutasítva'
         ]);
     }
+
 
     public function updateStatus(UpdateBookingStatusRequest $request, $id)
     {
@@ -200,4 +175,5 @@ class BookingController extends Controller
             'message' => 'Foglalás törölve',
         ]);
     }
+
 }

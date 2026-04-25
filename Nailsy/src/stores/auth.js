@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import { login as apiLogin, logout as apiLogout, me } from "../services/authService";
+import {
+    login as apiLogin,
+    logout as apiLogout,
+    me,
+} from "../services/authService";
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -29,8 +33,10 @@ export const useAuthStore = defineStore("auth", {
 
         async fetchUser() {
             const user = await me();
+
             this.user = user;
             localStorage.setItem("user", JSON.stringify(user));
+
             return user;
         },
 

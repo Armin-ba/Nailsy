@@ -34,7 +34,7 @@
           </li>
         </ul>
 
-        <div class="d-flex gap-2">
+        <div v-if="!auth.isLoggedIn" class="d-flex gap-2">
           <RouterLink class="btn btn-outline-dark" to="/auth/login">
             Bejelentkezés
           </RouterLink>
@@ -43,10 +43,71 @@
             Regisztráció
           </RouterLink>
         </div>
+
+        <div v-else class="dropdown">
+          <button
+              class="btn btn-dark dropdown-toggle"
+              type="button"
+              data-bs-toggle="dropdown"
+          >
+            <i class="bi bi-person-circle me-1"></i>
+            Saját profil
+          </button>
+
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <RouterLink class="dropdown-item" :to="profileRoute">
+                Profil megnyitása
+              </RouterLink>
+            </li>
+
+            <li v-if="auth.isUser">
+              <RouterLink class="dropdown-item" to="/app/my-bookings">
+                Foglalásaim
+              </RouterLink>
+            </li>
+
+            <li v-if="auth.isArtist">
+              <RouterLink class="dropdown-item" to="/app/artist/services">
+                Szolgáltatásaim
+              </RouterLink>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider" />
+            </li>
+
+            <li>
+              <button class="dropdown-item text-danger" @click="handleLogout">
+                Kijelentkezés
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </nav>
 </template>
+
+<script setup>
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
+
+const router = useRouter();
+const auth = useAuthStore();
+
+const profileRoute = computed(() => {
+  if (auth.isAdmin) return "/app/admin/artists";
+  if (auth.isArtist) return "/app/artist/dashboard";
+  return "/app/my-bookings";
+});
+
+const handleLogout = async () => {
+  await auth.logout();
+  router.push("/");
+};
+</script>
 
 <style scoped>
 .brand-logo {

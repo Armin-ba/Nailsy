@@ -20,6 +20,7 @@ Route::get('/artists/{artistId}/services', [ServiceController::class, 'byArtist'
 Route::get('/artists/{artistId}/gallery', [GalleryImageController::class, 'byArtist']);
 Route::get('/artists/{artistId}/ratings', [RatingController::class, 'indexByArtist']);
 Route::get('/artists/{artistId}/slots', [AvailableSlotController::class, 'indexByArtist']);
+Route::get('/artists/{artistId}/gallery', [GalleryImageController::class, 'byArtist']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -47,11 +48,24 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/artist/bookings', [BookingController::class, 'artistBookings']);
         Route::patch('/artist/bookings/{id}/accept', [BookingController::class, 'accept']);
         Route::patch('/artist/bookings/{id}/reject', [BookingController::class, 'reject']);
+
+        Route::get('/artist/gallery', [GalleryImageController::class, 'myGallery']);
+        Route::post('/artist/gallery', [GalleryImageController::class, 'store']);
+        Route::delete('/artist/gallery/{id}', [GalleryImageController::class, 'destroy']);
     });
 
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/admin/artists', [NailArtistController::class, 'all']);
-        Route::patch('/admin/artists/{id}/approve', [NailArtistController::class, 'approve']);
-        Route::patch('/admin/bookings/{id}/status', [BookingController::class, 'updateStatus']);
+    Route::middleware(['auth:sanctum','role:admin'])->group(function(){
+
+        Route::get('/admin/users',[AdminController::class,'users']);
+        Route::delete('/admin/users/{id}',[AdminController::class,'deleteUser']);
+
+        Route::get('/admin/artists',[AdminController::class,'artists']);
+        Route::patch('/admin/artists/{id}/approve',[AdminController::class,'approveArtist']);
+        Route::delete('/admin/artists/{id}',[AdminController::class,'deleteArtist']);
+
+        Route::get('/admin/reports',[AdminController::class,'reports']);
+        Route::delete('/admin/ratings/{id}',[AdminController::class,'deleteRating']);
+        Route::patch('/admin/reports/{id}/dismiss',[AdminController::class,'dismissReport']);
+
     });
 });
