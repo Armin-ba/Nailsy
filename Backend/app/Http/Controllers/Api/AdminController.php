@@ -3,64 +3,95 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\NailArtist;
 use App\Models\Rating;
 use App\Models\Report;
+use App\Models\User;
 
 class AdminController extends Controller
 {
     public function users()
     {
-        return User::all();
+        return response()->json(
+            User::orderBy('role')->orderBy('name')->get()
+        );
     }
 
     public function deleteUser($id)
     {
-        User::findOrFail($id)->delete();
+        $user = User::findOrFail($id);
+
+        if ($user->role === 'admin') {
+            return response()->json([
+                'message' => 'Admin felhasználó nem törölhető.',
+            ], 422);
+        }
+
+        $user->delete();
 
         return response()->json([
-            'message' => 'User törölve'
+            'message' => 'Felhasználó törölve.',
         ]);
     }
 
     public function artists()
     {
-        return NailArtist::with('user')->get();
+        return response()->json(
+            NailArtist::with(['user', 'services', 'galleryImages'])
+                ->orderBy('approved')
+                ->orderBy('name')
+                ->get()
+        );
     }
 
     public function approveArtist($id)
     {
         $artist = NailArtist::findOrFail($id);
 
-        $artist->approved = true;
-        $artist->save();
+        $artist->update([
+            'approved' => true,
+        ]);
 
         return response()->json([
-            'message' => 'Artist jóváhagyva'
+            'message' => 'Körmös jóváhagyva.',
+            'artist' => $artist->load('user'),
         ]);
     }
 
     public function deleteArtist($id)
     {
-        NailArtist::findOrFail($id)->delete();
+        $artist = NailArtist::with('user')->findOrFail($id);
+
+        $user = $artist->user;
+
+        $artist->delete();
+
+        if ($user && $user->role === 'artist') {
+            $user->delete();
+        }
 
         return response()->json([
-            'message' => 'Artist törölve'
+            'message' => 'Körmös és a hozzá tartozó felhasználó törölve.',
         ]);
     }
 
     public function reports()
     {
-        return Report::with('rating.user')->get();
+        return response()->json(
+            Report::with(['rating.user', 'rating.nailArtist', 'reporter'])
+                ->where('resolved', false)
+                ->latest()
+                ->get()
+        );
     }
 
     public function deleteRating($id)
     {
-        Rating::findOrFail($id)->delete();
+        $rating = Rating::findOrFail($id);
+        $rating->delete();
 
         return response()->json([
-            'message' => 'Komment törölve'
+            'message' => 'Értékelés törölve.',
         ]);
     }
 
@@ -68,11 +99,12 @@ class AdminController extends Controller
     {
         $report = Report::findOrFail($id);
 
-        $report->resolved = true;
-        $report->save();
+        $report->update([
+            'resolved' => true,
+        ]);
 
         return response()->json([
-            'message' => 'Report elutasítva'
+            'message' => 'Jelentés elutasítva.',
         ]);
     }
 }

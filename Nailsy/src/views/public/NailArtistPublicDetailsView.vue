@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 import {
   getArtistById,
@@ -7,8 +7,11 @@ import {
   getArtistSlots,
   getArtistRatings,
 } from "../../services/artistService";
+import { createRating } from "../../services/ratingService";
+import { useAuthStore } from "../../stores/auth";
 
 const route = useRoute();
+const auth = useAuthStore();
 
 const artist = ref(null);
 const services = ref([]);
@@ -17,21 +20,59 @@ const ratings = ref([]);
 const loading = ref(true);
 const error = ref("");
 
+const ratingLoading = ref(false);
+const ratingError = ref("");
+const ratingSuccess = ref("");
+
+const ratingForm = reactive({
+  star: 5,
+  comment: "",
+});
+
+const loadArtistData = async () => {
+  const artistId = route.params.id;
+
+  const [artistData, serviceData, slotData, ratingData] = await Promise.all([
+    getArtistById(artistId),
+    getArtistServices(artistId),
+    getArtistSlots(artistId),
+    getArtistRatings(artistId),
+  ]);
+
+  artist.value = artistData;
+  services.value = serviceData;
+  slots.value = slotData;
+  ratings.value = ratingData;
+};
+
+const submitRating = async () => {
+  ratingError.value = "";
+  ratingSuccess.value = "";
+  ratingLoading.value = true;
+
+  try {
+    await createRating({
+      nail_artist_id: artist.value.id,
+      star: ratingForm.star,
+      comment: ratingForm.comment,
+    });
+
+    ratingSuccess.value = "Értékelés sikeresen elküldve.";
+    ratingForm.star = 5;
+    ratingForm.comment = "";
+
+    await loadArtistData();
+  } catch (err) {
+    ratingError.value =
+        err.response?.data?.message || "Nem sikerült elküldeni az értékelést.";
+  } finally {
+    ratingLoading.value = false;
+  }
+};
+
 onMounted(async () => {
   try {
-    const artistId = route.params.id;
-
-    const [artistData, serviceData, slotData, ratingData] = await Promise.all([
-      getArtistById(artistId),
-      getArtistServices(artistId),
-      getArtistSlots(artistId),
-      getArtistRatings(artistId),
-    ]);
-
-    artist.value = artistData;
-    services.value = serviceData;
-    slots.value = slotData;
-    ratings.value = ratingData;
+    await loadArtistData();
   } catch (err) {
     error.value = "Nem sikerült betölteni a körmös adatait.";
     console.error(err);
@@ -40,6 +81,7 @@ onMounted(async () => {
   }
 });
 </script>
+
 <template>
   <section class="py-5 bg-light min-vh-100">
     <div class="container">
@@ -114,6 +156,56 @@ onMounted(async () => {
             <div class="card-body p-4">
               <h3 class="fw-bold mb-3">Értékelések</h3>
 
+              <div v-if="auth.isLoggedIn" class="rating-box rounded-4 p-3 mb-4">
+                <h5 class="fw-bold mb-3">Értékelés írása</h5>
+
+                <div v-if="ratingSuccess" class="alert alert-success">
+                  {{ ratingSuccess }}
+                </div>
+
+                <div v-if="ratingError" class="alert alert-danger">
+                  {{ ratingError }}
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Csillag</label>
+                  <select v-model="ratingForm.star" class="form-select">
+                    <option :value="5">5 csillag</option>
+                    <option :value="4">4 csillag</option>
+                    <option :value="3">3 csillag</option>
+                    <option :value="2">2 csillag</option>
+                    <option :value="1">1 csillag</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Vélemény</label>
+                  <textarea
+                      v-model="ratingForm.comment"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Írd le a véleményed..."
+                  ></textarea>
+                </div>
+
+                <button
+                    class="btn btn-dark"
+                    :disabled="ratingLoading"
+                    @click="submitRating"
+                >
+                  <span
+                      v-if="ratingLoading"
+                      class="spinner-border spinner-border-sm me-2"
+                  ></span>
+                  Értékelés küldése
+                </button>
+              </div>
+
+              <div v-else class="alert alert-light border">
+                Értékelés írásához jelentkezz be.
+                <RouterLink to="/auth/login">Bejelentkezés</RouterLink>
+              </div>
+
               <div v-if="ratings.length === 0" class="text-muted">
                 Még nincs értékelés.
               </div>
@@ -179,11 +271,14 @@ onMounted(async () => {
   </section>
 </template>
 
-
-
 <style scoped>
 .sticky-card {
   position: sticky;
   top: 90px;
+}
+
+.rating-box {
+  background: #fff5f9;
+  border: 1px solid #ffd6e7;
 }
 </style>

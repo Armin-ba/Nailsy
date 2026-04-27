@@ -243,23 +243,23 @@ const router = createRouter({
 GLOBAL ROUTE GUARD
 */
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
     const auth = useAuthStore();
 
     if (to.meta.requiresAuth && !auth.token) {
-        return next({
+        return {
             path: "/auth/login",
             query: { redirect: to.fullPath },
-        });
+        };
     }
 
     if (to.meta.role) {
         if (!auth.user || auth.user.role !== to.meta.role) {
-            return next("/not-authorized");
+            return "/not-authorized";
         }
     }
 
-    next();
+    return true;
 });
 
 export default router;

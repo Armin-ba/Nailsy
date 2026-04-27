@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApproveArtistRequest;
 use App\Models\NailArtist;
+use Illuminate\Http\Request;
 
 class NailArtistController extends Controller
 {
@@ -16,7 +17,8 @@ class NailArtistController extends Controller
 
         return response()->json($artists);
     }
-    public function search(\Illuminate\Http\Request $request)
+
+    public function search(Request $request)
     {
         $query = NailArtist::with(['services', 'galleryImages', 'ratings'])
             ->where('approved', true);
@@ -42,7 +44,9 @@ class NailArtistController extends Controller
 
     public function all()
     {
-        $artists = NailArtist::with(['user', 'services', 'galleryImages', 'ratings'])
+        $artists = NailArtist::with(['user', 'services', 'galleryImages'])
+            ->orderBy('approved')
+            ->orderBy('name')
             ->get();
 
         return response()->json($artists);
@@ -56,7 +60,7 @@ class NailArtistController extends Controller
         return response()->json($artist);
     }
 
-    public function myProfile(\Illuminate\Http\Request $request)
+    public function myProfile(Request $request)
     {
         $artist = NailArtist::where('user_id', $request->user()->id)
             ->with(['services', 'galleryImages', 'ratings'])
@@ -77,7 +81,7 @@ class NailArtistController extends Controller
 
         return response()->json([
             'message' => 'Artist státusz frissítve',
-            'artist' => $artist,
+            'artist' => $artist->load('user'),
         ]);
     }
 }

@@ -1,14 +1,15 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AvailableSlotController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\GalleryImageController;
 use App\Http\Controllers\Api\NailArtistController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\ServiceController;
-use Illuminate\Support\Facades\Route;
-
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -20,7 +21,6 @@ Route::get('/artists/{artistId}/services', [ServiceController::class, 'byArtist'
 Route::get('/artists/{artistId}/gallery', [GalleryImageController::class, 'byArtist']);
 Route::get('/artists/{artistId}/ratings', [RatingController::class, 'indexByArtist']);
 Route::get('/artists/{artistId}/slots', [AvailableSlotController::class, 'indexByArtist']);
-Route::get('/artists/{artistId}/gallery', [GalleryImageController::class, 'byArtist']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -54,18 +54,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/artist/gallery/{id}', [GalleryImageController::class, 'destroy']);
     });
 
-    Route::middleware(['auth:sanctum','role:admin'])->group(function(){
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/admin/users', [AdminController::class, 'users']);
+        Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
 
-        Route::get('/admin/users',[AdminController::class,'users']);
-        Route::delete('/admin/users/{id}',[AdminController::class,'deleteUser']);
+        Route::get('/admin/artists', [AdminController::class, 'artists']);
+        Route::patch('/admin/artists/{id}/approve', [AdminController::class, 'approveArtist']);
+        Route::delete('/admin/artists/{id}', [AdminController::class, 'deleteArtist']);
 
-        Route::get('/admin/artists',[AdminController::class,'artists']);
-        Route::patch('/admin/artists/{id}/approve',[AdminController::class,'approveArtist']);
-        Route::delete('/admin/artists/{id}',[AdminController::class,'deleteArtist']);
-
-        Route::get('/admin/reports',[AdminController::class,'reports']);
-        Route::delete('/admin/ratings/{id}',[AdminController::class,'deleteRating']);
-        Route::patch('/admin/reports/{id}/dismiss',[AdminController::class,'dismissReport']);
-
+        Route::get('/admin/reports', [AdminController::class, 'reports']);
+        Route::delete('/admin/ratings/{id}', [AdminController::class, 'deleteRating']);
+        Route::patch('/admin/reports/{id}/dismiss', [AdminController::class, 'dismissReport']);
     });
 });
