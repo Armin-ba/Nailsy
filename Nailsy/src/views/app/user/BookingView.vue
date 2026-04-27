@@ -325,6 +325,10 @@ async function loadBookingData() {
 
     services.value = serviceData;
     slots.value = slotData;
+
+    if (slotData.length > 0) {
+      currentWeekStart.value = getStartOfWeek(new Date(slotData[0].slot_date));
+    }
   } catch (err) {
     error.value = "Nem sikerült betölteni a foglalási adatokat.";
     console.error(err);

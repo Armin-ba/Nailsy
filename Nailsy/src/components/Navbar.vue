@@ -98,7 +98,7 @@ const router = useRouter();
 const auth = useAuthStore();
 
 const profileRoute = computed(() => {
-  if (auth.isAdmin) return "/app/admin/artists";
+  if (auth.isAdmin) return "/app/admin/dashboard";
   if (auth.isArtist) return "/app/artist/dashboard";
   return "/app/my-bookings";
 });

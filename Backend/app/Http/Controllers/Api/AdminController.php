@@ -13,7 +13,9 @@ class AdminController extends Controller
     public function users()
     {
         return response()->json(
-            User::orderBy('role')->orderBy('name')->get()
+            User::orderBy('role')
+                ->orderBy('name')
+                ->get()
         );
     }
 
@@ -31,6 +33,31 @@ class AdminController extends Controller
 
         return response()->json([
             'message' => 'Felhasználó törölve.',
+        ]);
+    }
+
+    public function userRatings($id)
+    {
+        $user = User::findOrFail($id);
+
+        $ratings = Rating::with(['nailArtist'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'user' => $user,
+            'ratings' => $ratings,
+        ]);
+    }
+
+    public function deleteRating($id)
+    {
+        $rating = Rating::findOrFail($id);
+        $rating->delete();
+
+        return response()->json([
+            'message' => 'Hozzászólás törölve.',
         ]);
     }
 
@@ -61,7 +88,6 @@ class AdminController extends Controller
     public function deleteArtist($id)
     {
         $artist = NailArtist::with('user')->findOrFail($id);
-
         $user = $artist->user;
 
         $artist->delete();
@@ -83,16 +109,6 @@ class AdminController extends Controller
                 ->latest()
                 ->get()
         );
-    }
-
-    public function deleteRating($id)
-    {
-        $rating = Rating::findOrFail($id);
-        $rating->delete();
-
-        return response()->json([
-            'message' => 'Értékelés törölve.',
-        ]);
     }
 
     public function dismissReport($id)

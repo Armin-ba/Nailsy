@@ -57,6 +57,7 @@ ERROR VIEWS
 
 import NotAuthorizedView from "../views/errors/NotAuthorizedView.vue";
 import NotFoundView from "../views/errors/NotFoundView.vue";
+import AdminDashboardView from "@/views/app/admin/AdminDashboardView.vue";
 
 /*
 ROUTES
@@ -191,19 +192,23 @@ const routes = [
             */
 
             {
+                path: "admin/dashboard",
+                name: "admin-dashboard",
+                component: AdminDashboardView,
+                meta: { role: "admin" },
+            },
+            {
                 path: "admin/users",
                 name: "admin-users",
                 component: AdminUserView,
                 meta: { role: "admin" },
             },
-
             {
                 path: "admin/artists",
                 name: "admin-artists",
                 component: AdminArtistView,
                 meta: { role: "admin" },
             },
-
             {
                 path: "admin/reviews",
                 name: "admin-reviews",

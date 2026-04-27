@@ -14,7 +14,6 @@ class AvailableSlotController extends Controller
     {
         $slots = AvailableSlot::where('nail_artist_id', $artistId)
             ->where('is_booked', false)
-            ->whereDate('slot_date', '>=', now()->toDateString())
             ->orderBy('slot_date')
             ->orderBy('start_time')
             ->get();

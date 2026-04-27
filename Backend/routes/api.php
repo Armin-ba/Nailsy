@@ -58,12 +58,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/users', [AdminController::class, 'users']);
         Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
 
+        Route::get('/admin/users/{id}/ratings', [AdminController::class, 'userRatings']);
+        Route::delete('/admin/ratings/{id}', [AdminController::class, 'deleteRating']);
+
         Route::get('/admin/artists', [AdminController::class, 'artists']);
         Route::patch('/admin/artists/{id}/approve', [AdminController::class, 'approveArtist']);
         Route::delete('/admin/artists/{id}', [AdminController::class, 'deleteArtist']);
 
         Route::get('/admin/reports', [AdminController::class, 'reports']);
-        Route::delete('/admin/ratings/{id}', [AdminController::class, 'deleteRating']);
         Route::patch('/admin/reports/{id}/dismiss', [AdminController::class, 'dismissReport']);
     });
 });

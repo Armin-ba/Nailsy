@@ -376,6 +376,10 @@ const loadSlots = async () => {
 
   try {
     slots.value = await getMySlots();
+    if (slots.value.length > 0) {
+      currentWeekStart.value = getStartOfWeek(new Date(slots.value[0].slot_date));
+    }
+
   } catch (error) {
     globalError.value = "Nem sikerült betölteni az időpontokat.";
   } finally {

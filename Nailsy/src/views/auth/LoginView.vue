@@ -88,11 +88,11 @@ const handleLogin = async () => {
     }
 
     if (user.role === "admin") {
-      router.push("/app/admin/artists");
+      router.push("/app/admin/dashboard");
     } else if (user.role === "artist") {
       router.push("/app/artist/dashboard");
     } else {
-      router.push("/app/artists");
+      router.push("/artists");
     }
   } catch (err) {
     error.value = err.response?.data?.message || "Sikertelen bejelentkezés.";
