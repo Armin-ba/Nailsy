@@ -105,7 +105,15 @@
                 <td>{{ user.name }}</td>
                 <td>{{ user.email }}</td>
                 <td>
-                  <span class="badge text-bg-dark">{{ user.role }}</span>
+                  <select
+                      v-model="user.role"
+                      class="form-select form-select-sm"
+                      @change="updateUserRole(user)"
+                  >
+                    <option value="user">user</option>
+                    <option value="artist">artist</option>
+                    <option value="admin">admin</option>
+                  </select>
                 </td>
 
                 <td class="text-end">
@@ -429,6 +437,22 @@ const dismissReport = async (id) => {
     await loadDashboard();
   } catch (err) {
     error.value = err.response?.data?.message || "Nem sikerült elutasítani.";
+  }
+};
+const updateUserRole = async (user) => {
+  success.value = "";
+  error.value = "";
+
+  try {
+    await api.patch(`/admin/users/${user.id}/role`, {
+      role: user.role,
+    });
+
+    success.value = "Felhasználói szerepkör frissítve.";
+    await loadDashboard();
+  } catch (err) {
+    error.value =
+        err.response?.data?.message || "Nem sikerült frissíteni a szerepkört.";
   }
 };
 

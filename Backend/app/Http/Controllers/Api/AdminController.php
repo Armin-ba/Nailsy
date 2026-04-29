@@ -7,6 +7,7 @@ use App\Models\NailArtist;
 use App\Models\Rating;
 use App\Models\Report;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -17,6 +18,24 @@ class AdminController extends Controller
                 ->orderBy('name')
                 ->get()
         );
+    }
+
+    public function updateUserRole(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'role' => ['required', 'in:user,artist,admin'],
+        ]);
+
+        $user = User::findOrFail($id);
+
+        $user->update([
+            'role' => $validated['role'],
+        ]);
+
+        return response()->json([
+            'message' => 'Felhasználói szerepkör frissítve.',
+            'user' => $user,
+        ]);
     }
 
     public function deleteUser($id)

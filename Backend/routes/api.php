@@ -25,7 +25,7 @@ Route::get('/artists/{artistId}/slots', [AvailableSlotController::class, 'indexB
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
-
+    Route::post('/reports', [ReportController::class, 'store']);
     Route::get('/bookings', [BookingController::class, 'index']);
     Route::post('/bookings', [BookingController::class, 'store']);
     Route::get('/bookings/{id}', [BookingController::class, 'show']);

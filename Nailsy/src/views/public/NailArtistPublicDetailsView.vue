@@ -8,6 +8,7 @@ import {
   getArtistRatings,
 } from "../../services/artistService";
 import { createRating } from "../../services/ratingService";
+import { createReport } from "../../services/reportService";
 import { useAuthStore } from "../../stores/auth";
 
 const route = useRoute();
@@ -24,10 +25,22 @@ const ratingLoading = ref(false);
 const ratingError = ref("");
 const ratingSuccess = ref("");
 
+const reportLoadingId = ref(null);
+const reportError = ref("");
+const reportSuccess = ref("");
+
 const ratingForm = reactive({
   star: 5,
   comment: "",
 });
+
+const reportReasons = [
+  "Nem releváns hozzászólás",
+  "Sértő vagy zaklató tartalom",
+  "Spam vagy reklám",
+  "Hamis információ",
+  "Közösségi irányelvek megsértése",
+];
 
 const loadArtistData = async () => {
   const artistId = route.params.id;
@@ -42,7 +55,10 @@ const loadArtistData = async () => {
   artist.value = artistData;
   services.value = serviceData;
   slots.value = slotData;
-  ratings.value = ratingData;
+  ratings.value = ratingData.map((rating) => ({
+    ...rating,
+    report_reason: reportReasons[0],
+  }));
 };
 
 const submitRating = async () => {
@@ -70,6 +86,26 @@ const submitRating = async () => {
   }
 };
 
+const submitReport = async (rating) => {
+  reportError.value = "";
+  reportSuccess.value = "";
+  reportLoadingId.value = rating.id;
+
+  try {
+    await createReport({
+      rating_id: rating.id,
+      reason: rating.report_reason,
+    });
+
+    reportSuccess.value = "Jelentés sikeresen elküldve.";
+  } catch (err) {
+    reportError.value =
+        err.response?.data?.message || "Nem sikerült elküldeni a jelentést.";
+  } finally {
+    reportLoadingId.value = null;
+  }
+};
+
 onMounted(async () => {
   try {
     await loadArtistData();
@@ -91,7 +127,7 @@ onMounted(async () => {
       </RouterLink>
 
       <div v-if="loading" class="text-center py-5">
-        <div class="spinner-border text-dark" role="status"></div>
+        <div class="spinner-border text-dark"></div>
         <p class="text-muted mt-3">Adatok betöltése...</p>
       </div>
 
@@ -202,8 +238,16 @@ onMounted(async () => {
               </div>
 
               <div v-else class="alert alert-light border">
-                Értékelés írásához jelentkezz be.
+                Értékelés írásához és jelentéshez jelentkezz be.
                 <RouterLink to="/auth/login">Bejelentkezés</RouterLink>
+              </div>
+
+              <div v-if="reportSuccess" class="alert alert-success">
+                {{ reportSuccess }}
+              </div>
+
+              <div v-if="reportError" class="alert alert-danger">
+                {{ reportError }}
               </div>
 
               <div v-if="ratings.length === 0" class="text-muted">
@@ -213,7 +257,7 @@ onMounted(async () => {
               <div
                   v-for="rating in ratings"
                   :key="rating.id"
-                  class="border-bottom py-2"
+                  class="border-bottom py-3"
               >
                 <div class="mb-1">
                   <i
@@ -228,7 +272,38 @@ onMounted(async () => {
                 <small class="text-muted">
                   {{ rating.user?.name || "Felhasználó" }}
                 </small>
+
+                <div v-if="auth.isLoggedIn" class="mt-3">
+                  <div class="row g-2">
+                    <div class="col-md-8">
+                      <select v-model="rating.report_reason" class="form-select form-select-sm">
+                        <option
+                            v-for="reason in reportReasons"
+                            :key="reason"
+                            :value="reason"
+                        >
+                          {{ reason }}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-4">
+                      <button
+                          class="btn btn-outline-danger btn-sm w-100"
+                          :disabled="reportLoadingId === rating.id"
+                          @click="submitReport(rating)"
+                      >
+                        <span
+                            v-if="reportLoadingId === rating.id"
+                            class="spinner-border spinner-border-sm me-1"
+                        ></span>
+                        Jelentés
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
+
             </div>
           </div>
         </div>

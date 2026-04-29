@@ -10,7 +10,7 @@ class Report extends Model
         'rating_id',
         'reported_by',
         'reason',
-        'resolved'
+        'resolved',
     ];
 
     public function rating()
@@ -20,6 +20,6 @@ class Report extends Model
 
     public function reporter()
     {
-        return $this->belongsTo(User::class,'reported_by');
+        return $this->belongsTo(User::class, 'reported_by');
     }
 }

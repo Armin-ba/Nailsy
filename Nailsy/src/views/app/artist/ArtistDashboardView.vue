@@ -1,6 +1,7 @@
 <template>
   <section class="py-5 bg-light min-vh-100">
     <div class="container">
+
       <div class="mb-4">
         <h1 class="fw-bold mb-1">Körmös dashboard</h1>
         <p class="text-muted mb-0">
@@ -13,10 +14,13 @@
       </div>
 
       <div class="row g-4">
-        <!-- SZOLGÁLTATÁSOK -->
+
+        <!-- SERVICE PANEL -->
         <div class="col-lg-5">
+
           <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-body p-4">
+
               <h4 class="fw-bold mb-3">
                 <i class="bi bi-brush me-2"></i>
                 Szolgáltatások
@@ -34,7 +38,6 @@
                 <label class="form-label">Szolgáltatás neve</label>
                 <input
                     v-model="serviceForm.name"
-                    type="text"
                     class="form-control"
                     placeholder="pl. Gél lakkozás"
                 />
@@ -47,17 +50,15 @@
                       v-model="serviceForm.price"
                       type="number"
                       class="form-control"
-                      placeholder="pl. 8000"
                   />
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label">Időtartam / perc</label>
+                  <label class="form-label">Időtartam</label>
                   <input
                       v-model="serviceForm.duration_min"
                       type="number"
                       class="form-control"
-                      placeholder="pl. 60"
                   />
                 </div>
               </div>
@@ -67,20 +68,12 @@
                   :disabled="serviceLoading"
                   @click="handleCreateService"
               >
-                <span
-                    v-if="serviceLoading"
-                    class="spinner-border spinner-border-sm me-2"
-                ></span>
                 Szolgáltatás hozzáadása
               </button>
 
               <hr class="my-4" />
 
-              <h5 class="fw-bold mb-3">Saját szolgáltatásaim</h5>
-
-              <div v-if="services.length === 0" class="text-muted">
-                Még nincs felvett szolgáltatásod.
-              </div>
+              <h5 class="fw-bold mb-3">Saját szolgáltatások</h5>
 
               <div
                   v-for="service in services"
@@ -100,15 +93,21 @@
                 >
                   <i class="bi bi-trash"></i>
                 </button>
+
               </div>
+
             </div>
           </div>
+
         </div>
 
-        <!-- IDŐPONT FELVÉTEL -->
+
+        <!-- SLOT PANEL -->
         <div class="col-lg-7">
+
           <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-body p-4">
+
               <h4 class="fw-bold mb-3">
                 <i class="bi bi-calendar-plus me-2"></i>
                 Szabad időpont hozzáadása
@@ -124,30 +123,15 @@
 
               <div class="row g-3">
                 <div class="col-md-4">
-                  <label class="form-label">Dátum</label>
-                  <input
-                      v-model="slotForm.slot_date"
-                      type="date"
-                      class="form-control"
-                  />
+                  <input v-model="slotForm.slot_date" type="date" class="form-control" />
                 </div>
 
                 <div class="col-md-4">
-                  <label class="form-label">Kezdés</label>
-                  <input
-                      v-model="slotForm.start_time"
-                      type="time"
-                      class="form-control"
-                  />
+                  <input v-model="slotForm.start_time" type="time" class="form-control" />
                 </div>
 
                 <div class="col-md-4">
-                  <label class="form-label">Befejezés</label>
-                  <input
-                      v-model="slotForm.end_time"
-                      type="time"
-                      class="form-control"
-                  />
+                  <input v-model="slotForm.end_time" type="time" class="form-control" />
                 </div>
               </div>
 
@@ -156,24 +140,17 @@
                   :disabled="slotLoading"
                   @click="handleCreateSlot"
               >
-                <span
-                    v-if="slotLoading"
-                    class="spinner-border spinner-border-sm me-2"
-                ></span>
                 Időpont hozzáadása
               </button>
 
               <hr class="my-4" />
 
-              <h5 class="fw-bold mb-3">
-                <i class="bi bi-calendar-week me-2"></i>
-                Szabad időpontok naptárnézetben
-              </h5>
+              <!-- WEEK NAV -->
 
-              <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="d-flex justify-content-between mb-3">
+
                 <button class="btn btn-outline-dark btn-sm" @click="previousWeek">
-                  <i class="bi bi-chevron-left"></i>
-                  Előző hét
+                  ← Előző hét
                 </button>
 
                 <strong>
@@ -181,37 +158,41 @@
                 </strong>
 
                 <button class="btn btn-outline-dark btn-sm" @click="nextWeek">
-                  Következő hét
-                  <i class="bi bi-chevron-right"></i>
+                  Következő hét →
                 </button>
+
               </div>
 
-              <div v-if="slotsLoading" class="text-center py-4">
-                <div class="spinner-border text-dark"></div>
-              </div>
+              <!-- CALENDAR -->
 
-              <div v-else class="table-responsive">
-                <table class="table table-bordered calendar-table align-middle bg-white">
+              <div class="table-responsive">
+
+                <table class="table table-bordered calendar-table">
+
                   <thead>
                   <tr>
                     <th
                         v-for="day in weekDays"
-                        :key="day.toISOString()"
-                        class="text-center calendar-head"
+                        :key="day"
+                        class="calendar-head text-center"
                     >
-                      <div class="fw-bold">{{ getDayName(day) }}</div>
-                      <small class="text-muted">{{ formatDate(day) }}</small>
+                      {{ getDayName(day) }}
+                      <br />
+                      <small>{{ formatDate(day) }}</small>
                     </th>
                   </tr>
                   </thead>
 
                   <tbody>
+
                   <tr>
+
                     <td
                         v-for="day in weekDays"
-                        :key="day.toISOString() + '-body'"
+                        :key="day + '-slots'"
                         class="calendar-cell"
                     >
+
                       <div
                           v-if="getSlotsForDay(day).length === 0"
                           class="text-muted small text-center py-3"
@@ -222,11 +203,13 @@
                       <div
                           v-for="slot in getSlotsForDay(day)"
                           :key="slot.id"
-                          class="slot-card mb-2"
+                          class="slot-card"
                           :class="{ booked: slot.is_booked }"
                       >
+
                         <div class="fw-semibold">
-                          {{ normalizeTime(slot.start_time) }} -
+                          {{ normalizeTime(slot.start_time) }}
+                          -
                           {{ normalizeTime(slot.end_time) }}
                         </div>
 
@@ -241,304 +224,289 @@
                         >
                           Törlés
                         </button>
+
                       </div>
+
                     </td>
+
                   </tr>
+
                   </tbody>
+
                 </table>
+
               </div>
 
-              <div class="mt-3 text-muted small">
-                <i class="bi bi-info-circle me-1"></i>
-                A foglalt időpontokat nem lehet törölni.
-              </div>
             </div>
           </div>
+
         </div>
+
       </div>
 
     </div>
   </section>
 </template>
 
+
+
 <script setup>
-import { computed, onMounted, reactive, ref } from "vue";
+
+import { ref, reactive, computed, onMounted } from "vue"
 import {
   getMyServices,
   createService,
-  deleteService,
-} from "../../../services/serviceService";
+  deleteService
+} from "../../../services/serviceService"
+
 import {
   getMySlots,
   createSlot,
-  deleteSlot,
-} from "../../../services/slotService";
+  deleteSlot
+} from "../../../services/slotService"
 
-const services = ref([]);
-const slots = ref([]);
 
-const globalError = ref("");
 
-const serviceLoading = ref(false);
-const serviceSuccess = ref("");
-const serviceError = ref("");
+const services = ref([])
+const slots = ref([])
 
-const slotLoading = ref(false);
-const slotsLoading = ref(false);
-const slotSuccess = ref("");
-const slotError = ref("");
+const globalError = ref("")
 
-const currentWeekStart = ref(getStartOfWeek(new Date()));
+const serviceLoading = ref(false)
+const serviceSuccess = ref("")
+const serviceError = ref("")
+
+const slotLoading = ref(false)
+const slotSuccess = ref("")
+const slotError = ref("")
+
+
 
 const serviceForm = reactive({
   name: "",
   price: "",
-  duration_min: "",
-});
+  duration_min: ""
+})
 
 const slotForm = reactive({
   slot_date: "",
   start_time: "",
-  end_time: "",
-});
+  end_time: ""
+})
+
+
+
+const currentWeekStart = ref(getStartOfWeek(new Date()))
+
+
 
 const weekDays = computed(() => {
-  const days = [];
+  return [...Array(7)].map((_, i) => {
+    const d = new Date(currentWeekStart.value)
+    d.setDate(d.getDate() + i)
+    return d
+  })
+})
 
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(currentWeekStart.value);
-    date.setDate(currentWeekStart.value.getDate() + i);
-    days.push(date);
-  }
 
-  return days;
-});
 
 function getStartOfWeek(date) {
-  const copied = new Date(date);
-  const day = copied.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
 
-  copied.setDate(copied.getDate() + diff);
-  copied.setHours(0, 0, 0, 0);
+  const d = new Date(date)
+  const day = d.getDay()
+  const diff = day === 0 ? -6 : 1 - day
 
-  return copied;
+  d.setDate(d.getDate() + diff)
+  d.setHours(0,0,0,0)
+
+  return d
 }
+
+
 
 function toDateString(date) {
-  return date.toISOString().split("T")[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
-function formatDate(date) {
-  return date.toLocaleDateString("hu-HU", {
-    month: "2-digit",
-    day: "2-digit",
-  });
+
+
+function formatDate(date){
+  return date.toLocaleDateString("hu-HU",{month:"2-digit",day:"2-digit"})
 }
 
-function getDayName(date) {
-  return date.toLocaleDateString("hu-HU", {
-    weekday: "long",
-  });
+
+
+function getDayName(date){
+  return date.toLocaleDateString("hu-HU",{weekday:"long"})
 }
 
-function normalizeTime(time) {
-  if (!time) return "";
-  return time.slice(0, 5);
+
+
+function normalizeTime(time){
+  return time?.slice(0,5)
 }
 
-function getSlotsForDay(day) {
-  const dateString = toDateString(day);
+
+
+const getSlotsForDay = (date)=>{
+
+  const dateString = toDateString(date)
 
   return slots.value
-      .filter((slot) => slot.slot_date === dateString)
-      .sort((a, b) => a.start_time.localeCompare(b.start_time));
+      .filter(slot => slot.slot_date === dateString)
+      .sort((a,b)=>a.start_time.localeCompare(b.start_time))
+
 }
 
-const previousWeek = () => {
-  const date = new Date(currentWeekStart.value);
-  date.setDate(date.getDate() - 7);
-  currentWeekStart.value = date;
-};
 
-const nextWeek = () => {
-  const date = new Date(currentWeekStart.value);
-  date.setDate(date.getDate() + 7);
-  currentWeekStart.value = date;
-};
 
-const loadServices = async () => {
-  services.value = await getMyServices();
-};
+const previousWeek = ()=>{
+  const d=new Date(currentWeekStart.value)
+  d.setDate(d.getDate()-7)
+  currentWeekStart.value=d
+}
 
-const loadSlots = async () => {
-  slotsLoading.value = true;
 
-  try {
-    slots.value = await getMySlots();
-    if (slots.value.length > 0) {
-      currentWeekStart.value = getStartOfWeek(new Date(slots.value[0].slot_date));
-    }
 
-  } catch (error) {
-    globalError.value = "Nem sikerült betölteni az időpontokat.";
-  } finally {
-    slotsLoading.value = false;
+const nextWeek = ()=>{
+  const d=new Date(currentWeekStart.value)
+  d.setDate(d.getDate()+7)
+  currentWeekStart.value=d
+}
+
+
+
+const loadServices = async()=>{
+  services.value = await getMyServices()
+}
+
+
+
+const loadSlots = async()=>{
+  slots.value = await getMySlots()
+}
+
+
+
+const loadDashboard = async()=>{
+  try{
+    await Promise.all([loadServices(),loadSlots()])
   }
-};
-
-const loadDashboard = async () => {
-  try {
-    await Promise.all([loadServices(), loadSlots()]);
-  } catch (error) {
-    globalError.value = "Nem sikerült betölteni a dashboard adatait.";
+  catch{
+    globalError.value="Nem sikerült betölteni a dashboard adatokat"
   }
-};
+}
 
-const resetServiceForm = () => {
-  serviceForm.name = "";
-  serviceForm.price = "";
-  serviceForm.duration_min = "";
-};
 
-const resetSlotForm = () => {
-  slotForm.slot_date = "";
-  slotForm.start_time = "";
-  slotForm.end_time = "";
-};
 
-const handleCreateService = async () => {
-  serviceSuccess.value = "";
-  serviceError.value = "";
+const handleCreateService = async()=>{
 
-  if (!serviceForm.name || !serviceForm.price || !serviceForm.duration_min) {
-    serviceError.value = "Minden mező kitöltése kötelező.";
-    return;
-  }
+  serviceLoading.value=true
 
-  serviceLoading.value = true;
+  try{
 
-  try {
-    await createService({
-      name: serviceForm.name,
-      price: Number(serviceForm.price),
-      duration_min: Number(serviceForm.duration_min),
-    });
+    await createService(serviceForm)
 
-    serviceSuccess.value = "Szolgáltatás sikeresen hozzáadva.";
-    resetServiceForm();
-    await loadServices();
-  } catch (error) {
-    serviceError.value =
-        error.response?.data?.message || "Nem sikerült létrehozni a szolgáltatást.";
-  } finally {
-    serviceLoading.value = false;
-  }
-};
+    serviceSuccess.value="Szolgáltatás hozzáadva"
 
-const handleDeleteService = async (id) => {
-  serviceSuccess.value = "";
-  serviceError.value = "";
+    serviceForm.name=""
+    serviceForm.price=""
+    serviceForm.duration_min=""
 
-  try {
-    await deleteService(id);
-    serviceSuccess.value = "Szolgáltatás törölve.";
-    await loadServices();
-  } catch (error) {
-    serviceError.value =
-        error.response?.data?.message || "Nem sikerült törölni a szolgáltatást.";
-  }
-};
+    await loadServices()
 
-const handleCreateSlot = async () => {
-  slotSuccess.value = "";
-  slotError.value = "";
+  }catch(err){
 
-  if (!slotForm.slot_date || !slotForm.start_time || !slotForm.end_time) {
-    slotError.value = "Minden időpont mező kitöltése kötelező.";
-    return;
+    serviceError.value="Nem sikerült létrehozni"
+
   }
 
-  slotLoading.value = true;
+  serviceLoading.value=false
 
-  try {
-    await createSlot({
-      slot_date: slotForm.slot_date,
-      start_time: slotForm.start_time,
-      end_time: slotForm.end_time,
-    });
+}
 
-    slotSuccess.value = "Szabad időpont sikeresen hozzáadva.";
-    resetSlotForm();
-    await loadSlots();
-  } catch (error) {
-    slotError.value =
-        error.response?.data?.message || "Nem sikerült létrehozni az időpontot.";
-  } finally {
-    slotLoading.value = false;
+
+
+const handleDeleteService = async(id)=>{
+  await deleteService(id)
+  await loadServices()
+}
+
+
+
+const handleCreateSlot = async()=>{
+
+  slotLoading.value=true
+
+  try{
+
+    await createSlot(slotForm)
+
+    slotSuccess.value="Időpont hozzáadva"
+
+    slotForm.slot_date=""
+    slotForm.start_time=""
+    slotForm.end_time=""
+
+    await loadSlots()
+
   }
-};
-
-const handleDeleteSlot = async (id) => {
-  slotSuccess.value = "";
-  slotError.value = "";
-
-  try {
-    await deleteSlot(id);
-    slotSuccess.value = "Időpont törölve.";
-    await loadSlots();
-  } catch (error) {
-    slotError.value =
-        error.response?.data?.message || "Nem sikerült törölni az időpontot.";
+  catch{
+    slotError.value="Nem sikerült létrehozni"
   }
-};
 
-onMounted(() => {
-  loadDashboard();
-});
+  slotLoading.value=false
+
+}
+
+
+
+const handleDeleteSlot = async(id)=>{
+  await deleteSlot(id)
+  await loadSlots()
+}
+
+
+
+onMounted(loadDashboard)
+
 </script>
 
+
+
 <style scoped>
-.service-item {
-  background: #fff;
-  border: 1px solid #eeeeee;
-  border-radius: 16px;
-  padding: 12px 14px;
+
+.service-item{
+  background:white;
+  border:1px solid #eee;
+  border-radius:14px;
+  padding:10px
 }
 
-.calendar-table {
-  min-width: 900px;
+.calendar-head{
+  background:#fff5f9
 }
 
-.calendar-head {
-  background: #fff5f9;
-  color: #333;
-  width: 14.28%;
+.calendar-cell{
+  height:210px;
+  vertical-align:top
 }
 
-.calendar-cell {
-  min-width: 130px;
-  height: 210px;
-  vertical-align: top;
-  background: #ffffff;
+.slot-card{
+  background:#fff5f9;
+  border:1px solid #ffd6e7;
+  border-radius:12px;
+  padding:8px;
+  margin-bottom:6px
 }
 
-.slot-card {
-  border: 1px solid #ffd6e7;
-  background: #fff5f9;
-  color: #333;
-  border-radius: 14px;
-  padding: 10px;
-  font-size: 0.9rem;
+.slot-card.booked{
+  background:#f1f1f1;
+  border-color:#ddd
 }
 
-.slot-card.booked {
-  background: #f1f1f1;
-  border-color: #dddddd;
-  color: #777;
-}
-
-.btn-dark {
-  background-color: #222;
-}
 </style>

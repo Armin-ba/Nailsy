@@ -22,4 +22,9 @@ class Rating extends Model
     {
         return $this->belongsTo(NailArtist::class);
     }
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
 }
