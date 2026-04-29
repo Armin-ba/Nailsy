@@ -1,7 +1,5 @@
 csapattagok: Teremi Csaba, Bankó Ármin Gábor, Kertész Ivett Adrienn
 project: Nailsy - körmös foglaló alkalmazás
-github tartalma:
-indítás: 
 userek: 
 Admin
 email: admin@nailsy.hu
